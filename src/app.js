@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+const cors = require("cors");
 require("dotenv").config();
 
 const productRoutes = require("./routes/productRoutes");
@@ -9,6 +10,7 @@ const errorHandler = require("./middleware/errorHandler");
 const app = express();
 
 // ─── Middleware ───────────────────────────────────────────────
+app.use(cors());
 app.use(express.json());          // JSON body parse karta hai
 app.use(morgan("dev"));           // Har request ko terminal mein log karta hai
 
