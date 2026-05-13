@@ -1,126 +1,101 @@
-# 🛒 Products REST API
+# Products REST API
 
-> A production-quality **RESTful API** built with **Node.js + Express + MongoDB** for managing products.
-> Built as **Task 1** of the Alfido Tech MERN Stack Developer Internship.
+A simple REST API built with Node.js, Express and MongoDB to manage products. This is Task 1 of my Alfido Tech MERN Stack Internship.
 
----
-
-## ✨ Features
-
-- ✅ Full **CRUD** operations — Create, Read, Update, Delete
-- ✅ **Mongoose** schema with validation & error messages
-- ✅ **Centralized error handling** middleware
-- ✅ **HTTP request logging** with Morgan
-- ✅ **MongoDB Atlas** cloud database integration
-- ✅ **Environment variable** support via dotenv
-- ✅ **MVC architecture** — clean, scalable folder structure
-- ✅ **Postman collection** included for easy API testing
+The API supports basic CRUD operations — you can create, read, update and delete products. Data is stored in MongoDB Atlas (cloud).
 
 ---
 
-## 🚀 Tech Stack
+## Tech Stack
 
-| Technology | Version | Purpose |
-|-----------|---------|---------|
-| Node.js | v18+ | Runtime environment |
-| Express.js | ^4.18.2 | Web framework |
-| MongoDB Atlas | Cloud | Database |
-| Mongoose | ^7.6.3 | ODM for MongoDB |
-| Morgan | ^1.10.0 | HTTP request logger |
-| Dotenv | ^16.3.1 | Environment variables |
-| Nodemon | ^3.0.1 | Auto-restart in development |
+- **Node.js** — server runtime
+- **Express.js** — web framework
+- **MongoDB Atlas** — cloud database
+- **Mongoose** — for schema and validation
+- **Morgan** — logs incoming requests in terminal
+- **Dotenv** — manages environment variables
 
 ---
 
-## 📁 Folder Structure
+## Project Structure
 
 ```
 products-api/
 ├── src/
 │   ├── controllers/
-│   │   └── productController.js  → CRUD logic for all endpoints
+│   │   └── productController.js  
 │   ├── middleware/
-│   │   └── errorHandler.js       → Centralized error handling
+│   │   └── errorHandler.js       
 │   ├── models/
-│   │   └── Product.js            → Mongoose schema & validation
+│   │   └── Product.js            
 │   ├── routes/
-│   │   └── productRoutes.js      → API route definitions
-│   └── app.js                    → Express app entry point
-├── .env.example                  → Environment variable template
+│   │   └── productRoutes.js      
+│   └── app.js                    
+├── .env.example
 ├── .gitignore
-├── postman-collection.json       → Ready-to-use Postman requests
+├── postman-collection.json
 ├── package.json
 └── README.md
 ```
 
 ---
 
-## ⚙️ Setup & Installation
+## Getting Started
 
-### Prerequisites
-- Node.js v18+
-- npm v9+
-- MongoDB Atlas account (free tier works)
-
----
-
-### 1. Clone the repository
+### 1. Clone the repo
 
 ```bash
 git clone https://github.com/Dharmit-Monani/products-api.git
 cd products-api
 ```
 
-### 2. Install dependencies
+### 2. Install packages
 
 ```bash
 npm install
 ```
 
-### 3. Configure environment variables
+### 3. Setup environment variables
 
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and add your MongoDB Atlas URI:
+Create a `.env` file in the root folder:
 
 ```env
 PORT=5000
-MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/productsdb
+MONGO_URI=your_mongodb_atlas_connection_string
 ```
+
+You can copy from `.env.example` as a reference.
 
 ### 4. Run the server
 
 ```bash
-# Development (auto-restart on file change)
+# development
 npm run dev
 
-# Production
+# production
 npm start
 ```
 
-Server runs at: **http://localhost:5000**
+Server will start at `http://localhost:5000`
 
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
-| Method | Endpoint | Description | Status Code |
-|--------|----------|-------------|-------------|
-| `GET` | `/api/products` | Get all products | 200 |
-| `GET` | `/api/products/:id` | Get single product | 200 |
-| `POST` | `/api/products` | Create new product | 201 |
-| `PUT` | `/api/products/:id` | Update a product | 200 |
-| `DELETE` | `/api/products/:id` | Delete a product | 200 |
+| Method | Endpoint | What it does |
+|--------|----------|--------------|
+| GET | `/api/products` | Returns all products |
+| GET | `/api/products/:id` | Returns one product by ID |
+| POST | `/api/products` | Creates a new product |
+| PUT | `/api/products/:id` | Updates an existing product |
+| DELETE | `/api/products/:id` | Deletes a product |
 
 ---
 
-## 📦 Sample Request & Response
+## Sample Request
 
-### POST `/api/products` — Create Product
+**POST** `/api/products`
 
-**Request Body:**
 ```json
 {
   "name": "Wireless Mouse",
@@ -132,115 +107,65 @@ Server runs at: **http://localhost:5000**
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
   "data": {
     "_id": "6802e10f412ce062f6851ebb",
     "name": "Wireless Mouse",
-    "description": "Ergonomic wireless mouse with 2.4GHz connectivity",
     "price": 799,
     "stock": 50,
     "category": "Electronics",
-    "createdAt": "2026-05-10T10:00:00.000Z",
-    "updatedAt": "2026-05-10T10:00:00.000Z"
+    "createdAt": "2026-05-10T10:00:00.000Z"
   }
-}
-```
-
-### GET `/api/products` — Get All Products
-
-**Response:**
-```json
-{
-  "success": true,
-  "count": 2,
-  "data": [ ... ]
-}
-```
-
-### Error Response Example
-
-```json
-{
-  "success": false,
-  "message": "Product name is required."
 }
 ```
 
 ---
 
-## 🌱 Environment Variables
+## Product Schema
 
-See `.env.example`:
+```
+name        - required, max 100 characters
+description - required
+price       - required, cannot be negative
+stock       - required, default is 0
+category    - optional, default is "General"
+createdAt   - auto generated
+updatedAt   - auto generated
+```
+
+---
+
+## Testing with Postman
+
+I've included a `postman-collection.json` file in the repo. Just import it in Postman and all 5 requests will be ready to test.
+
+---
+
+## Environment Variables
 
 ```env
 PORT=5000
 MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/productsdb
 ```
 
-> ⚠️ Never commit your `.env` file — it is already in `.gitignore`
+Note: Never push your `.env` file — it's already in `.gitignore`.
 
 ---
 
-## 🧪 Testing with Postman
+## What I'd like to add later
 
-A ready-to-use Postman collection is included: `postman-collection.json`
-
-**To import:**
-1. Open Postman
-2. Click **Import**
-3. Select `postman-collection.json`
-4. All 5 requests will be ready to use ✅
+- Add search and filter support on the GET endpoint
+- Add pagination so large data doesn't slow things down
+- Add JWT auth to protect routes
+- Deploy on Render or Railway
 
 ---
 
-## 🗄️ Product Schema
+## Author
 
-```js
-{
-  name:        String  (required, max 100 chars)
-  description: String  (required)
-  price:       Number  (required, min 0)
-  stock:       Number  (required, min 0, default 0)
-  category:    String  (default: "General")
-  createdAt:   Date    (auto)
-  updatedAt:   Date    (auto)
-}
-```
-
----
-
-## 🔮 Future Improvements
-
-- 🔐 **JWT Authentication** — Secure endpoints with login/signup
-- 📄 **Pagination** — Limit results with page & limit query params
-- 🔍 **Search & Filter** — Query products by name, category, price range
-- 📊 **Analytics Endpoint** — Total value, low stock alerts
-- 🖼️ **Image Upload** — Product photos via Cloudinary
-- 🌐 **Deployment** — Render / Railway cloud hosting
-
----
-
-## 🔗 Related Repositories
-
-| Task | Repository | Description |
-|------|-----------|-------------|
-| Task 1 | [products-api](https://github.com/Dharmit-Monani/products-api) | Node.js + Express + MongoDB REST API (this repo) |
-| Task 2 | [products-dashboard](https://github.com/Dharmit-Monani/products-dashboard) | React SPA Frontend |
-
----
-
-## 👤 Author
-
-**Dharmit Monani**
-- 🏢 Alfido Tech — MERN Stack Developer Intern
-- 🪪 Candidate ID: `BS/REG/119983`
-- 📅 Internship Start: 10 May 2026
-- 👨‍💻 Domain: MERN Stack Development
-
----
-
-## 📄 License
-
-This project is built for educational and internship submission purposes.
+Dharmit Monani
+Alfido Tech Internship — MERN Stack Developer
+Candidate ID: BS/REG/119983
