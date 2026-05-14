@@ -1,21 +1,28 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
 require("dotenv").config();
 
 const productRoutes = require("./routes/productRoutes");
+const authRoutes = require("./routes/authRoutes");       // NEW
 const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 
 // ─── Middleware ───────────────────────────────────────────────
-app.use(cors());
-app.use(express.json());          // JSON body parse karta hai
-app.use(morgan("dev"));           // Har request ko terminal mein log karta hai
+app.use(cors({
+  origin: "http://localhost:5173", // React frontend URL
+  credentials: true,               // Allow cookies to be sent cross-origin
+}));
+app.use(express.json());
+app.use(cookieParser());           // Parse httpOnly cookies — NEW
+app.use(morgan("dev"));
 
 // ─── Routes ──────────────────────────────────────────────────
-app.use("/api/products", productRoutes);
+app.use("/api/auth", authRoutes);          // NEW — auth routes
+app.use("/api/products", productRoutes);   // existing — unchanged
 
 // Home route
 app.get("/", (req, res) => {

@@ -7,16 +7,15 @@ const {
   updateProduct,
   deleteProduct,
 } = require("../controllers/productController");
+const { protect } = require("../middleware/authMiddleware");
 
-// /api/products
-router.route("/")
-  .get(getAllProducts)    // GET  → sab products
-  .post(createProduct);  // POST → naya product
+// ─── Public Routes — no login needed ─────────────────────────
+router.get("/", getAllProducts);          // anyone can view all products
+router.get("/:id", getProductById);      // anyone can view single product
 
-// /api/products/:id
-router.route("/:id")
-  .get(getProductById)    // GET    → ek product
-  .put(updateProduct)     // PUT    → update
-  .delete(deleteProduct); // DELETE → delete
+// ─── Protected Routes — login required ───────────────────────
+router.post("/", protect, createProduct);        // only logged in users
+router.put("/:id", protect, updateProduct);      // only logged in users
+router.delete("/:id", protect, deleteProduct);   // only logged in users
 
 module.exports = router;
