@@ -1,8 +1,8 @@
 # Products REST API
 
-A REST API built with Node.js, Express and MongoDB for managing products with full JWT authentication. This covers Task 1 and Task 3 of my Alfido Tech MERN Stack Internship.
+A REST API built with Node.js, Express and MongoDB for managing products. This project covers Task 1, Task 3 and Task 4 of my Alfido Tech MERN Stack Internship.
 
-The API handles product CRUD operations and user authentication using bcrypt password hashing and JWT tokens stored in httpOnly cookies.
+It handles product CRUD operations and user authentication using bcrypt and JWT tokens stored in httpOnly cookies. The entire app is containerized with Docker.
 
 ---
 
@@ -11,9 +11,10 @@ The API handles product CRUD operations and user authentication using bcrypt pas
 - Register and login users securely
 - Hash passwords with bcrypt before saving
 - Issue JWT tokens stored in httpOnly cookies
-- Protect create, update and delete product routes
-- Keep GET routes public so anyone can browse products
-- Handle token expiry and invalid token errors cleanly
+- Protect create, update and delete routes
+- Keep GET routes public for browsing products
+- Handle token expiry and invalid sessions
+- Run inside Docker with MongoDB container
 
 ---
 
@@ -21,11 +22,11 @@ The API handles product CRUD operations and user authentication using bcrypt pas
 
 - **Node.js** — runtime
 - **Express.js** — web framework
-- **MongoDB Atlas** — cloud database
+- **MongoDB** — database (Atlas for dev, Docker container for production)
 - **Mongoose** — schema and validation
 - **bcryptjs** — password hashing
-- **jsonwebtoken** — JWT generation and verification
-- **cookie-parser** — read httpOnly cookies from requests
+- **jsonwebtoken** — JWT tokens
+- **cookie-parser** — read httpOnly cookies
 - **Morgan** — request logging
 - **Dotenv** — environment variables
 - **Nodemon** — auto-restart in development
@@ -38,18 +39,20 @@ The API handles product CRUD operations and user authentication using bcrypt pas
 products-api/
 ├── src/
 │   ├── controllers/
-│   │   ├── authController.js     → register, login, logout, getMe
-│   │   └── productController.js  → CRUD logic
+│   │   ├── authController.js
+│   │   └── productController.js
 │   ├── middleware/
-│   │   ├── authMiddleware.js     → JWT verification, protects routes
-│   │   └── errorHandler.js      → centralized error handling
+│   │   ├── authMiddleware.js
+│   │   └── errorHandler.js
 │   ├── models/
-│   │   ├── User.js              → user schema with bcrypt pre-save hook
-│   │   └── Product.js           → product schema
+│   │   ├── User.js
+│   │   └── Product.js
 │   ├── routes/
-│   │   ├── authRoutes.js        → /api/auth/*
-│   │   └── productRoutes.js     → /api/products/*
-│   └── app.js                   → express setup, middleware, routes
+│   │   ├── authRoutes.js
+│   │   └── productRoutes.js
+│   └── app.js
+├── Dockerfile
+├── .dockerignore
 ├── .env.example
 ├── .gitignore
 ├── postman-collection.json
@@ -59,22 +62,17 @@ products-api/
 
 ---
 
-## Getting Started
+## Running Locally (without Docker)
 
-### 1. Clone the repo
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/Dharmit-Monani/products-api.git
 cd products-api
-```
-
-### 2. Install packages
-
-```bash
 npm install
 ```
 
-### 3. Create your .env file
+### 2. Create .env file
 
 ```bash
 cp .env.example .env
@@ -89,59 +87,77 @@ JWT_SECRET=your_secret_key_here
 JWT_EXPIRE=7d
 ```
 
-### 4. Start the server
+### 3. Start the server
 
 ```bash
-# development
 npm run dev
-
-# production
-npm start
 ```
 
 Server runs at `http://localhost:5000`
 
 ---
 
+## Running with Docker
+
+The easiest way to run the full stack is with Docker Compose from the root Alfido folder.
+
+```bash
+cd D:\Alfido
+docker compose up
+```
+
+This starts:
+- MongoDB container
+- Backend on port 5000
+- Frontend on port 80
+
+Visit `http://localhost` in your browser.
+
+To stop:
+
+```bash
+docker compose down
+```
+
+---
+
 ## Auth Endpoints
 
-| Method | Endpoint | Access | What it does |
-|--------|----------|--------|--------------|
-| POST | `/api/auth/register` | Public | Create new account |
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
+| POST | `/api/auth/register` | Public | Create account |
 | POST | `/api/auth/login` | Public | Login and get cookie |
 | POST | `/api/auth/logout` | Public | Clear auth cookie |
-| GET | `/api/auth/me` | Protected | Get current user info |
+| GET | `/api/auth/me` | Protected | Get current user |
 
 ---
 
 ## Product Endpoints
 
-| Method | Endpoint | Access | What it does |
-|--------|----------|--------|--------------|
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
 | GET | `/api/products` | Public | Get all products |
-| GET | `/api/products/:id` | Public | Get one product |
+| GET | `/api/products/:id` | Public | Get single product |
 | POST | `/api/products` | Protected | Create product |
 | PUT | `/api/products/:id` | Protected | Update product |
 | DELETE | `/api/products/:id` | Protected | Delete product |
 
 ---
 
-## How Authentication Works
+## How Auth Works
 
 1. User registers or logs in
-2. Server hashes password with bcrypt (10 salt rounds)
-3. Server generates a JWT token signed with JWT_SECRET
-4. Token is sent as an httpOnly cookie — JS cannot access it
-5. Every protected request automatically sends the cookie
-6. Auth middleware reads and verifies the token
-7. If valid, `req.user` is set and the request continues
-8. If expired or invalid, a 401 response is returned
+2. Password hashed with bcrypt (10 salt rounds)
+3. JWT token generated and sent as httpOnly cookie
+4. Every protected request sends the cookie automatically
+5. Auth middleware verifies the token
+6. If valid, request goes through — if not, 401 returned
 
 ---
 
 ## Sample Request Body
 
-**Register / Login:**
+**Register:**
 ```json
 {
   "name": "Dharmit Monani",
@@ -151,7 +167,7 @@ Server runs at `http://localhost:5000`
 }
 ```
 
-**Create Product (requires login):**
+**Create Product (login required):**
 ```json
 {
   "name": "Wireless Mouse",
@@ -168,43 +184,44 @@ Server runs at `http://localhost:5000`
 
 ```env
 PORT=5000
-MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/productsdb
+MONGO_URI=mongodb://mongo:27017/productsDB
 JWT_SECRET=your_strong_secret_key
 JWT_EXPIRE=7d
+NODE_ENV=production
 ```
 
-Never push your `.env` file — it is in `.gitignore`.
+Never push your `.env` — it is in `.gitignore`.
 
 ---
 
-## Security Notes
+## Security
 
-- Passwords are hashed with bcrypt before storing — never saved as plain text
+- Passwords never stored as plain text — always bcrypt hashed
 - JWT tokens expire after 7 days
-- Tokens stored in httpOnly cookies — not accessible via JavaScript (XSS safe)
-- sameSite strict on cookies for CSRF protection
-- CORS configured to allow only the frontend origin with credentials
+- Tokens in httpOnly cookies — not accessible via JavaScript
+- sameSite strict cookies for CSRF protection
+- CORS allows only the frontend origin with credentials
 
 ---
 
 ## Testing with Postman
 
-Import `postman-collection.json` from the repo. All product requests are included. For auth testing, register first then login — the cookie will be set automatically.
+Import `postman-collection.json` from the repo. Register first, then login — the cookie sets automatically and all protected requests work.
 
 ---
 
-## Things I want to improve later
+## Things I want to improve
 
-- Add refresh token support so users stay logged in longer
-- Add rate limiting on login to prevent brute force
+- Add refresh token support
+- Add rate limiting on login endpoint
 - Add email verification on signup
-- Deploy on Render with production environment variables
+- Deploy to cloud with proper environment secrets
 
 ---
 
 ## Related Repos
 
-- Task 1 + 3 — [products-api](https://github.com/Dharmit-Monani/products-api) (this repo)
+- Task 1 + 3 + 4 — [products-api](https://github.com/Dharmit-Monani/products-api) (this repo)
 - Task 2 — [products-dashboard](https://github.com/Dharmit-Monani/products-dashboard)
 
 ---

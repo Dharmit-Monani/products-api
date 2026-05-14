@@ -13,8 +13,8 @@ const app = express();
 
 // ─── Middleware ───────────────────────────────────────────────
 app.use(cors({
-  origin: "http://localhost:5173", // React frontend URL
-  credentials: true,               // Allow cookies to be sent cross-origin
+  origin: ["http://localhost:5173", "http://localhost"],  // ← http://localhost add karo
+  credentials: true,
 }));
 app.use(express.json());
 app.use(cookieParser());           // Parse httpOnly cookies — NEW

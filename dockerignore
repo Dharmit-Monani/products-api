@@ -1,0 +1,24 @@
+# Dependencies — installed fresh inside container
+node_modules
+
+# Environment variables — never bake secrets into image
+.env
+
+# Git files
+.git
+.gitignore
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Dev tools
+.vscode
+.idea
+
+# README and docs — not needed in container
+README.md
